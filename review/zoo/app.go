@@ -1,5 +1,5 @@
 package main
 
 func AppName() string{
-  return "zoo"
+  return "Zoo Application"
 }
