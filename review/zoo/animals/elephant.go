@@ -1,4 +1,4 @@
- package animals
+package animals
 
 func ElephantFeed() string{
   return "Grass"

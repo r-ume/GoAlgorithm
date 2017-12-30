@@ -48,5 +48,7 @@ func main(){
   s = s[1:]
   fmt.Println(s)
 
+  a1 := [...]int{1, 2, 3} // a1 == [3]int{1, 2, 3}
+
 
 }
