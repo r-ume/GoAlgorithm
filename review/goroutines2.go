@@ -4,18 +4,19 @@ import(
   "fmt"
   "log"
   "net/http"
-  "time"
+  "sync"
 )
 
 func main(){
 
+  wait := new(sync.WaitGroup)
   urls := []string{
     "http://example.com",
     "http://example.net",
     "http://example.org",
   }
 
-  // Without GoRoutine
+  Without GoRoutine
   for _, url := range urls{
     response, err := http.Get(url)
     if err != nil{
@@ -27,6 +28,9 @@ func main(){
 
   // With GoRoutine
   for _, url := range urls {
+    // waitGroupに追加
+    wait.Add(1)
+    
     // 取得処理をゴルーチンで実行する
     go func(url string) {
       res, err := http.Get(url)
@@ -35,9 +39,10 @@ func main(){
         }
       defer res.Body.Close()
       fmt.Println(url, res.Status)
+      wait.Done()
     }(url)
   }
 
-  time.Sleep(time.Second)
+  wait.Wait()
 }
 
