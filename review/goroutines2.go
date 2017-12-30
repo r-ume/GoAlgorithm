@@ -15,7 +15,6 @@ func main(){
     "http://example.net",
     "http://example.org",
   }
-  statusChannel := make(chan string)
 
   // Without GoRoutine
   for _, url := range urls{
@@ -26,10 +25,23 @@ func main(){
     defer response.Body.Close()
     fmt.Println(url, response.Status)
   }
+  
+  statusChannel := getStatus(urls)
 
-  // With GoRoutine
+  // ゴルーチンの中でstatusChanに値が書き込まれるまで，main()の中では値を読み出すことができません。
+  // この場合，main()内ではstatusChanの読み出しが3回完了するまで処理がブロックされるため，waitGroupのような待ち合わせ処理は必要がない。
+  // これにより，HTTPリクエストを並行して発行し，早く取得されたステータスから順に受け取ることができる。
+  for i := 0; i < len(urls); i++ {
+    fmt.Println(<-statusChannel)
+  }
+}
+
+// With GoRoutine
+func getStatus(urls []string) <- chan string{
+
+  statusChannel := make(chan string, len(urls))
+
   for _, url := range urls {
-
     // waitGroupに追加
     // wait.Add(1)
 
@@ -46,11 +58,6 @@ func main(){
     }(url)
   }
 
-  // ゴルーチンの中でstatusChanに値が書き込まれるまで，main()の中では値を読み出すことができません。
-  // この場合，main()内ではstatusChanの読み出しが3回完了するまで処理がブロックされるため，waitGroupのような待ち合わせ処理は必要がない。
-
-  for i := 0; i < len(urls); i++ {
-    fmt.Println(<-statusChannel)
-  }
+  return statusChannel
 }
 
