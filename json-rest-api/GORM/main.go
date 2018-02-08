@@ -22,6 +22,8 @@ func main(){
     rest.Get("/reminders", i.GetAllReminders),
     rest.Get("/reminders/:id", i.GetReminder),
     rest.Post("/reminders", i.PostReminder),
+    rest.Put("/reminders/:id", i.PutReminder),
+    rest.Delete("/reminders/:id", i.DeleteReminder),
   )
 
   if err != nil{
@@ -59,6 +61,7 @@ func (i *Impl) InitSchema(){
 }
 
 func (i *Impl) PostReminder(w rest.ResponseWriter, r *rest.Request){
+
   reminder := Reminder{}
   if err := r.DecodeJsonPayload(&reminder); err != nil{
     rest.Error(w, err.Error(), http.StatusInternalServerError)
@@ -87,4 +90,45 @@ func (i *Impl) GetReminder(w rest.ResponseWriter, r *rest.Request){
   }
 
   w.WriteJson(&reminder)
+}
+
+func (i *Impl) PutReminder(w rest.ResponseWriter, r *rest.Request){
+  id := r.PathParam("id")
+  reminder := Reminder{}
+
+  if i.DB.First(&reminder, id).Error != nil{
+    rest.NotFound(w, r)
+    return
+  }
+
+  updated := Reminder{}
+  if err := r.DecodeJsonPayload(&updated); err != nil{
+    rest.Error(w, err.Error(), http.StatusInternalServerError)
+    return
+  }
+
+  reminder.Message = updated.Message
+
+  if err := i.DB.Save(&reminder).Error; err != nil{
+    rest.Error(w, err.Error(), http.StatusInternalServerError)
+    return
+  }
+
+  w.WriteJson(&reminder)
+}
+
+func (i *Impl) DeleteReminder(w rest.ResponseWriter, r *rest.Request){
+  id := r.PathParam("id")
+  reminder := Reminder{}
+  if i.DB.First(&reminder, id).Error != nil{
+    rest.NotFound(w, r)
+    return
+  }
+
+  if err := i.DB.Delete(&reminder).Error; err != nil {
+    rest.Error(w, err.Error(), http.StatusInternalServerError)
+    return
+  }
+
+  w.WriteHeader(http.StatusOK)
 }
