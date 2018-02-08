@@ -20,6 +20,7 @@ func main(){
   api.Use(rest.DefaultDevStack...)
   router, err := rest.MakeRouter(
     rest.Get("/reminders", i.GetAllReminders),
+    rest.Get("/reminders/:id", i.GetReminder),
     rest.Post("/reminders", i.PostReminder),
   )
 
@@ -75,4 +76,15 @@ func (i *Impl) GetAllReminders(w rest.ResponseWriter, r *rest.Request){
   reminders := []Reminder{}
   i.DB.Find(&reminders)
   w.WriteJson(&reminders)
+}
+
+func (i *Impl) GetReminder(w rest.ResponseWriter, r *rest.Request){
+  id := r.PathParam("id")
+  reminder := Reminder{}
+  if i.DB.First(&reminder, id).Error != nil{
+    rest.NotFound(w, r)
+    return
+  }
+
+  w.WriteJson(&reminder)
 }
