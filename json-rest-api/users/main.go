@@ -16,6 +16,7 @@ func main(){
   api := rest.NewApi()
   api.Use(rest.DefaultDevStack...)
   router, err := rest.MakeRouter(
+    rest.Get("/users", users.GetAllUsers),
     rest.Post("/users", users.PostUser),
   )
 
@@ -35,6 +36,18 @@ type User struct{
 type Users struct{
   sync.RWMutex
   Store map[string]*User
+}
+
+func (users *Users) GetAllUsers (w rest.ResponseWriter, r *rest.Request){
+  users.RLock()
+  all_users := make([]User, len(users.Store))
+  index := 0
+  for _, user := range users.Store{
+    all_users[index] = *user
+    index++
+  }
+  users.RUnlock()
+  w.WriteJson(&all_users)
 }
 
 func (users *Users) PostUser(w rest.ResponseWriter, r *rest.Request){
