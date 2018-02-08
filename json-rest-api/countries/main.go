@@ -16,6 +16,7 @@ func main(){
 
   router, err := rest.MakeRouter(
     rest.Get("/countries", GetAllCountries),
+    rest.Get("/countries/:code", GetCountry),
     rest.Post("/countries", PostCountry),
   )
 
@@ -44,6 +45,26 @@ func GetAllCountries(w rest.ResponseWriter, r *rest.Request){
 
   lock.RUnlock()
   w.WriteJson(&countries)
+}
+
+func GetCountry(w rest.ResponseWriter, r *rest.Request){
+  code := r.PathParam("code")
+
+  lock.RLock()
+  var country *Country
+
+  if store[code] != nil{
+    country = &Country{}
+    *country = *store[code]
+  }
+  lock.RUnlock()
+
+  if country == nil{
+    rest.NotFound(w, r)
+    return
+  }
+
+  w.WriteJson(country)
 }
 
 func PostCountry(w rest.ResponseWriter, r *rest.Request){
