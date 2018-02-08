@@ -5,7 +5,6 @@ import(
   "log"
   "net/http"
   "sync"
-  "fmt"
 )
 
 var store = map[string]*Country{}
@@ -17,6 +16,7 @@ func main(){
 
   router, err := rest.MakeRouter(
     rest.Get("/countries", GetAllCountries),
+    rest.Post("/countries", PostCountry),
   )
 
   if err != nil{
@@ -44,4 +44,28 @@ func GetAllCountries(w rest.ResponseWriter, r *rest.Request){
 
   lock.RUnlock()
   w.WriteJson(&countries)
+}
+
+func PostCountry(w rest.ResponseWriter, r *rest.Request){
+  country := Country{}
+  err := r.DecodeJsonPayload(&country)
+
+  if err != nil{
+    rest.Error(w, err.Error(), http.StatusInternalServerError)
+    return
+  }
+
+  if country.Code == "" {
+    rest.Error(w, "country code required", 400)
+  }
+
+  if country.Name == "" {
+    rest.Error(w, "country name required", 400)
+  }
+
+  lock.Lock()
+  store[country.Code] = &country
+  lock.Unlock()
+
+  w.WriteJson(&country)
 }
