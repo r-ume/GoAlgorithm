@@ -20,6 +20,7 @@ func main(){
     rest.Get("/users/:id", users.GetUser),
     rest.Post("/users", users.PostUser),
     rest.Put("/users/:id", users.PutUser),
+    rest.Delete("/users/:id", users.DeleteUser),
   )
 
   if err != nil{
@@ -108,4 +109,12 @@ func (users *Users) PutUser(w rest.ResponseWriter, r *rest.Request){
   users.Store[id] = &user
   users.Unlock()
   w.WriteJson(&user)
+}
+
+func (users *Users) DeleteUser(w rest.ResponseWriter, r *rest.Request){
+  id := r.PathParam("id")
+  users.Lock()
+  delete(users.Store, id)
+  users.Unlock()
+  w.WriteHeader(http.StatusOK)
 }
