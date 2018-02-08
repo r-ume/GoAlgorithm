@@ -18,6 +18,7 @@ func main(){
     rest.Get("/countries", GetAllCountries),
     rest.Get("/countries/:code", GetCountry),
     rest.Post("/countries", PostCountry),
+    rest.Delete("/countries/:code", DeleteCountry),
   )
 
   if err != nil{
@@ -89,4 +90,13 @@ func PostCountry(w rest.ResponseWriter, r *rest.Request){
   lock.Unlock()
 
   w.WriteJson(&country)
+}
+
+func DeleteCountry(w rest.ResponseWriter, r *rest.Request){
+  code := r.PathParam("code")
+
+  lock.Lock()
+  delete(store, code)
+  lock.Unlock()
+  w.WriteHeader(http.StatusOK)
 }
