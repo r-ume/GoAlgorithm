@@ -19,6 +19,7 @@ func main(){
   api := rest.NewApi()
   api.Use(rest.DefaultDevStack...)
   router, err := rest.MakeRouter(
+    rest.Get("/reminders", i.GetAllReminders),
     rest.Post("/reminders", i.PostReminder),
   )
 
@@ -70,4 +71,8 @@ func (i *Impl) PostReminder(w rest.ResponseWriter, r *rest.Request){
   w.WriteJson(&reminder)
 }
 
-
+func (i *Impl) GetAllReminders(w rest.ResponseWriter, r *rest.Request){
+  reminders := []Reminder{}
+  i.DB.Find(&reminders)
+  w.WriteJson(&reminders)
+}
