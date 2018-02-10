@@ -1,4 +1,4 @@
-package main
+package practices
 
 import(
   "fmt"
@@ -15,7 +15,7 @@ func exchangeSample(s *Sample){
   s.Y = y 
 }
 
-func main(){
+func First(){
   s := Sample{X: 1, Y: 2}
   exchangeSample(&s)
   fmt.Println(s.X)
