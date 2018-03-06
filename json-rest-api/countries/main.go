@@ -1,102 +1,103 @@
 package main
 
-import(
-  "github.com/ant0ine/go-json-rest/rest"
-  "log"
-  "net/http"
-  "sync"
+import (
+	"log"
+	"net/http"
+	"sync"
+
+	"github.com/ant0ine/go-json-rest/rest"
 )
 
 var store = map[string]*Country{}
 var lock = sync.RWMutex{}
 
-func main(){
-  api := rest.NewApi()
-  api.Use(rest.DefaultDevStack...)
+func main() {
+	api := rest.NewApi()
+	api.Use(rest.DefaultDevStack...)
 
-  router, err := rest.MakeRouter(
-    rest.Get("/countries", GetAllCountries),
-    rest.Get("/countries/:code", GetCountry),
-    rest.Post("/countries", PostCountry),
-    rest.Delete("/countries/:code", DeleteCountry),
-  )
+	router, err := rest.MakeRouter(
+		rest.Get("/countries", GetAllCountries),
+		rest.Get("/countries/:code", GetCountry),
+		rest.Post("/countries", PostCountry),
+		rest.Delete("/countries/:code", DeleteCountry),
+	)
 
-  if err != nil{
-    log.Fatal(err)
-  }
+	if err != nil {
+		log.Fatal(err)
+	}
 
-  api.SetApp(router)
-  log.Fatal(http.ListenAndServe(":8080", api.MakeHandler()))
+	api.SetApp(router)
+	log.Print(http.ListenAndServe(":8080", api.MakeHandler()))
 }
 
-type Country struct{
-  Code string
-  Name string
+type Country struct {
+	Code string
+	Name string
 }
 
-func GetAllCountries(w rest.ResponseWriter, r *rest.Request){
-  lock.RLock()
-  countries := make([]Country, len(store))
-  index := 0
+func GetAllCountries(w rest.ResponseWriter, r *rest.Request) {
+	lock.RLock()
+	countries := make([]Country, len(store))
+	index := 0
 
-  for _, country := range store{
-    countries[index] = *country
-    index++
-  }
+	for _, country := range store {
+		countries[index] = *country
+		index++
+	}
 
-  lock.RUnlock()
-  w.WriteJson(&countries)
+	lock.RUnlock()
+	w.WriteJson(&countries)
 }
 
-func GetCountry(w rest.ResponseWriter, r *rest.Request){
-  code := r.PathParam("code")
+func GetCountry(w rest.ResponseWriter, r *rest.Request) {
+	code := r.PathParam("code")
 
-  lock.RLock()
-  var country *Country
+	lock.RLock()
+	var country *Country
 
-  if store[code] != nil{
-    country = &Country{}
-    *country = *store[code]
-  }
-  lock.RUnlock()
+	if store[code] != nil {
+		country = &Country{}
+		*country = *store[code]
+	}
+	lock.RUnlock()
 
-  if country == nil{
-    rest.NotFound(w, r)
-    return
-  }
+	if country == nil {
+		rest.NotFound(w, r)
+		return
+	}
 
-  w.WriteJson(country)
+	w.WriteJson(country)
 }
 
-func PostCountry(w rest.ResponseWriter, r *rest.Request){
-  country := Country{}
-  err := r.DecodeJsonPayload(&country)
+func PostCountry(w rest.ResponseWriter, r *rest.Request) {
+	country := Country{}
+	err := r.DecodeJsonPayload(&country)
 
-  if err != nil{
-    rest.Error(w, err.Error(), http.StatusInternalServerError)
-    return
-  }
+	if err != nil {
+		rest.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 
-  if country.Code == "" {
-    rest.Error(w, "country code required", 400)
-  }
+	if country.Code == "" {
+		rest.Error(w, "country code required", 400)
+	}
 
-  if country.Name == "" {
-    rest.Error(w, "country name required", 400)
-  }
+	if country.Name == "" {
+		rest.Error(w, "country name required", 400)
+	}
 
-  lock.Lock()
-  store[country.Code] = &country
-  lock.Unlock()
+	lock.Lock()
+	store[country.Code] = &country
+	lock.Unlock()
 
-  w.WriteJson(&country)
+	w.WriteJson(&country)
 }
 
-func DeleteCountry(w rest.ResponseWriter, r *rest.Request){
-  code := r.PathParam("code")
+func DeleteCountry(w rest.ResponseWriter, r *rest.Request) {
+	code := r.PathParam("code")
 
-  lock.Lock()
-  delete(store, code)
-  lock.Unlock()
-  w.WriteHeader(http.StatusOK)
+	lock.Lock()
+	delete(store, code)
+	lock.Unlock()
+	w.WriteHeader(http.StatusOK)
 }
