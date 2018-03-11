@@ -1,4 +1,4 @@
-package main
+package practices
 
 import "fmt"
 
@@ -20,11 +20,11 @@ type AdminUser struct {
 	Admin bool
 }
 
-func (s *AdminUser) JSON() scdtring {
+func (s *AdminUser) JSON() string {
 	return fmt.Sprintf(`{ "Id": %d, "Name": "%s", "Admin": "%v" }`, s.Id, s.Name, s.Admin)
 }
 
-func main() {
+func Fifth() {
 	var user JSONable = &User{1, "r-ume"}
 	fmt.Println(user.JSON())
 

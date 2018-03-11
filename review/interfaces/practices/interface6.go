@@ -1,4 +1,4 @@
-package main
+package practices
 
 import "fmt"
 
@@ -28,7 +28,7 @@ func MakeSomeoneCry(someone interface{}) {
 	a.Cry()
 }
 
-func main() {
+func Sixth() {
 	dog := Dog{}
 	cat := Cat{}
 
