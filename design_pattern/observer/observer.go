@@ -1,69 +1,65 @@
-package main
+package observer
 
 import (
-	"fmt"
 	"math/rand"
 )
 
-type observer interface {
-	update() int
+// Observer interface
+type Observer interface {
+	Update() int
 }
 
-type number interface {
-	getNumber() int
+// Number interface
+type Number interface {
+	GetNumber() int
 }
 
-type numberGenerator struct {
-	observers []observer
+// NumberGenerator number generator
+type NumberGenerator struct {
+	Observers []Observer
 }
 
-type DigitObserver struct {
-	generator number
+// AddObserver add observer struct
+func (n *NumberGenerator) AddObserver(observer Observer) {
+	n.Observers = append(n.Observers, observer)
 }
 
-func main() {
-	random := NewRandomNumberGenerator()
-
-	observer1 := &DigitObserver{random}
-	observer2 := &DigitObserver{random}
-
-	random.AddObserver(observer1)
-	random.AddObserver(observer2)
-
-	result := random.Execute()
-
-	fmt.Println(result)
-}
-
-func (self *numberGenerator) AddObserver(observer observer) {
-	self.observers = append(self.observers, observer)
-}
-
-func (self *numberGenerator) notifyObservers() []int {
+// NotifyObservers notify observers struct
+func (n *NumberGenerator) NotifyObservers() []int {
 	var result []int
-	for _, observer := range self.observers {
-		result = append(result, observer.update())
+	for _, observer := range n.Observers {
+		result = append(result, observer.Update())
 	}
 
 	return result
 }
 
-type randomNumberGenerator struct {
-	*numberGenerator
+// RandomNumberGenerator random number generator struct
+type RandomNumberGenerator struct {
+	*NumberGenerator
 }
 
-func NewRandomNumberGenerator() *randomNumberGenerator {
-	return &randomNumberGenerator{&numberGenerator{}}
-}
-
-func (self *randomNumberGenerator) getNumber() int {
+// GetNumber get number
+func (r *RandomNumberGenerator) GetNumber() int {
 	return rand.Intn(50)
 }
 
-func (self *randomNumberGenerator) Execute() []int {
-	return self.notifyObservers()
+// Execute notify observer
+func (r *RandomNumberGenerator) Execute() []int {
+	return r.NotifyObservers()
 }
 
-func (self *DigitObserver) update() int {
-	return self.generator.getNumber()
+// DigitObserver digit observer struct
+type DigitObserver struct {
+	Generator Number
+}
+
+// Update update the number by getting a different number
+func (d *DigitObserver) Update() int {
+	return d.Generator.GetNumber()
+}
+
+// NewRandomNumberGenerator return new random number generator instance.
+func NewRandomNumberGenerator() *RandomNumberGenerator {
+	return &RandomNumberGenerator{&NumberGenerator{}}
 }
