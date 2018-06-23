@@ -2,7 +2,13 @@ package main
 
 import (
 	"fmt"
+	"sync"
 	"time"
+)
+
+var (
+	jst  *time.Location
+	once sync.Once
 )
 
 func main() {
@@ -28,6 +34,24 @@ func main() {
 	after := now1.Add(10 * time.Hour)
 	fmt.Println("\nAdd 10 Hour:", after)
 
+	fmt.Println("")
+
+	t := time.Date(2018, time.May, 22, 12, 0, 0, 0, JST())
+	fmt.Println(t)
+
+	fmt.Println(time.Now())
+
+	fmt.Println(time.Now().After(t))
 }
 
-
+// JST jst
+func JST() *time.Location {
+	once.Do(func() {
+		location, err := time.LoadLocation("Asia/Tokyo")
+		if err != nil {
+			panic("couldn't load location.")
+		}
+		jst = location
+	})
+	return jst
+}
