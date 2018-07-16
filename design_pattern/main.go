@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/romukey/GolangPlayground/design_pattern/adapter"
+	"github.com/romukey/GolangPlayground/design_pattern/builder"
 	"github.com/romukey/GolangPlayground/design_pattern/iterator"
 	"github.com/romukey/GolangPlayground/design_pattern/strategy"
 	"github.com/romukey/GolangPlayground/design_pattern/templatemethod"
@@ -15,6 +16,11 @@ func main() {
 	var printBanner adapter.Print = adapter.NewPrintBanner("Hello") // 型はadapter.Print
 	printBanner.PrintWeak()
 	printBanner.PrintStrong()
+
+	// Builder
+	fmt.Println("----Builder-----")
+	director := builder.NewDirector(builder.NewTextBuilder())
+	fmt.Println(director.Construct())
 
 	// Iterator
 	fmt.Println("----Iterator-----")
