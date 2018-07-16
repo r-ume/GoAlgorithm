@@ -1,5 +1,8 @@
 package adapter
 
+// Role: Adapter 適応する側
+// Adapteeで揃っている関数を使う
+
 type (
 	// PrintBannerImpl print banner interface
 	PrintBannerImpl struct {

@@ -29,7 +29,7 @@ func NewProbStrategy(seed int) *ProbStrategy {
 	}
 }
 
-// NewHand returns new hand
+// NextHand returns new hand
 func (p *ProbStrategy) NextHand() *Hand {
 	bet := rand.Intn(p.getNum(currentHandValue))
 	handValue := 0

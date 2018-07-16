@@ -2,6 +2,8 @@ package adapter
 
 import "fmt"
 
+// Role: Adaptee 適応される側
+
 type (
 	// BannerImpl banner
 	BannerImpl struct {
