@@ -5,6 +5,7 @@ import (
 
 	"github.com/romukey/GolangPlayground/design_pattern/adapter"
 	"github.com/romukey/GolangPlayground/design_pattern/builder"
+	"github.com/romukey/GolangPlayground/design_pattern/facade"
 	"github.com/romukey/GolangPlayground/design_pattern/iterator"
 	"github.com/romukey/GolangPlayground/design_pattern/prototype"
 	"github.com/romukey/GolangPlayground/design_pattern/strategy"
@@ -87,4 +88,8 @@ func main() {
 	}
 
 	fmt.Println("OriginalValue: ", prototype.Values)
+
+	// Facade
+	simulator := facade.NewSimulator()
+	simulator.Simulate()
 }
