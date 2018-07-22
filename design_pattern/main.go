@@ -6,6 +6,7 @@ import (
 	"github.com/romukey/GolangPlayground/design_pattern/adapter"
 	"github.com/romukey/GolangPlayground/design_pattern/builder"
 	"github.com/romukey/GolangPlayground/design_pattern/iterator"
+	"github.com/romukey/GolangPlayground/design_pattern/prototype"
 	"github.com/romukey/GolangPlayground/design_pattern/strategy"
 	"github.com/romukey/GolangPlayground/design_pattern/templatemethod"
 )
@@ -69,4 +70,21 @@ func main() {
 	fmt.Println(charDisplay.Display(charDisplay))
 	stringDisplay := templatemethod.NewStringDisplay("romukey")
 	fmt.Println(stringDisplay.Display(stringDisplay))
+
+	// Prototype
+	fmt.Println("-------Protype----------")
+	prototype := prototype.NewPrototype([]int{1, 2, 3, 4, 5})
+	fmt.Println("Original Value: ", prototype.Values)
+
+	for i := 0; i < 10; i++ {
+		copy := prototype.Copy()
+		values := prototype.S()
+		values[0] = prototype.Values[0] * i
+		values[1] = prototype.Values[1] * i
+		values[2] = prototype.Values[2] * i
+		values[3] = prototype.Values[3] * i
+		copy.PrintValue()
+	}
+
+	fmt.Println("OriginalValue: ", prototype.Values)
 }
