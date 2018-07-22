@@ -7,6 +7,7 @@ import (
 	"github.com/romukey/GolangPlayground/design_pattern/builder"
 	"github.com/romukey/GolangPlayground/design_pattern/facade"
 	"github.com/romukey/GolangPlayground/design_pattern/iterator"
+	"github.com/romukey/GolangPlayground/design_pattern/mediator"
 	"github.com/romukey/GolangPlayground/design_pattern/prototype"
 	"github.com/romukey/GolangPlayground/design_pattern/strategy"
 	"github.com/romukey/GolangPlayground/design_pattern/templatemethod"
@@ -36,6 +37,15 @@ func main() {
 		book := it.Next()
 		fmt.Println(book.(*iterator.BookImpl).GetName())
 	}
+
+	// Mediator
+	fmt.Println("----Mediator-----")
+	loginForm := mediator.NewLoginForm()
+	fmt.Println(loginForm.Button.Enabled)
+
+	loginForm.RadioButton.Check(true)
+
+	fmt.Println(loginForm.Button.Enabled)
 
 	// Strategy
 	fmt.Println("----Strategy-----")
